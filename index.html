@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Walkie Talkie Interface</title>
+</head>
+<body>
+    <header class="raw-header">
+        <h1>RAW</h1>
+    </header>
+
+    <div class="walkie-talkie">
+        <main class="walkie-controls">
+            <div class="screen">
+                <p class="status">Ready</p>
+            </div>
+            <div class="buttons">
+                <button class="btn btn-primary">Push to Talk</button>
+                <button class="btn btn-secondary" id="stopButton">Stop</button>
+            </div>            
+            <div class="volume-control">
+                <label for="volumeSlider">Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+            </div>
+        </main>
+    </div>
+
+    <marquee class="warning-marquee" behavior="scroll" direction="left">
+        This tool is intended for government use only. Unauthorized use may result in legal action. 
+        <span class="copyright">© 2024 Government of India <img src="flag.png" alt="Indian Flag" width="25"></span>
+    </marquee>
+</body>
+<script>
+    const talkButton = document.querySelector('.btn-primary');
+    const stopButton = document.getElementById('stopButton');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const sounds = ['sound1.mp3', 'sound2.mp3', 'sound3.mp3']; // List of sounds
+    let soundIndex = 0; // To keep track of the current sound in the sequence
+    let currentSound; // To keep track of the currently playing sound
+    let soundTimeout;
+
+    talkButton.addEventListener('mousedown', function() {
+        clearTimeout(soundTimeout);
+        if (currentSound) {
+            currentSound.pause();
+            currentSound.currentTime = 0; // Reset sound to the beginning
+        }
+    });
+
+    talkButton.addEventListener('mouseup', function() {
+        soundTimeout = setTimeout(() => {
+            currentSound = new Audio(sounds[soundIndex]);
+            currentSound.volume = volumeSlider.value; // Set volume based on slider
+            currentSound.play();
+
+            soundIndex = (soundIndex + 1) % sounds.length; // Cycle through sounds
+        }, 500); // 0.5 seconds delay
+    });
+
+    stopButton.addEventListener('click', function() {
+        if (currentSound) {
+            currentSound.pause();
+            currentSound.currentTime = 0; // Reset to the beginning
+        }
+        clearTimeout(soundTimeout);
+    });
+
+    // Update volume in real-time as the slider is moved
+    volumeSlider.addEventListener('input', function() {
+        if (currentSound) {
+            currentSound.volume = volumeSlider.value;
+        }
+    });
+</script>
+</html>
